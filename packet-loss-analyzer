@@ -29,7 +29,7 @@
 
 # print statistics
 END {
-  for ( i in flows ) {
+  for (i in flows) {
     print "received " flows[i] " of " max[i]-min[i]+1 " packets from flow " i " (" (flows[i]*100.)/(max[i]-min[i]+1) "%)"
     received += flows[i]
     total += max[i]-min[i]+1
