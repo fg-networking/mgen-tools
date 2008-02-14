@@ -1,7 +1,7 @@
 #! /usr/bin/awk -f
 
 # analyse an mgen log file for packet loss
-# Copyright (C) 2008 Erik Auerswald
+# Copyright (C) 2008 Erik Auerswald <auerswald@fg-networking.de>
 #
 # received and expected packets for every flow are printed seperately
 # the total number of received and expected packets is printed as well
