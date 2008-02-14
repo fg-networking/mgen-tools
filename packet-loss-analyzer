@@ -1,0 +1,41 @@
+#! /usr/bin/awk -f
+
+# analyse an mgen log file for packet loss
+# Copyright (C) 2008 Erik Auerswald
+#
+# received and expected packets for every flow are printed seperately
+# the total number of received and expected packets is printed as well
+#
+# packets lost after the last received packet are not counted
+
+# count received packets and determine range of sequence numbers
+/RECV/ {
+  split($3, flow, />/)
+  split($4, seq, />/)
+
+  if (flows[flow[2]] == 0) {
+    min[flow[2]] = seq[2]
+    max[flow[2]] = seq[2]
+  } else {
+    if (seq[2] < min[flow[2]]) {
+      min[flow[2]] = seq[2]
+    }
+    if (seq[2] > max[flow[2]]) {
+      max[flow[2]] = seq[2]
+    }
+  }
+  flows[flow[2]]++
+}
+
+# print statistics
+END {
+  for ( i in flows ) {
+    print "received " flows[i] " of " max[i]-min[i]+1 " packets from flow " i " (" (flows[i]*100.)/(max[i]-min[i]+1) "%)"
+    received += flows[i]
+    total += max[i]-min[i]+1
+  }
+  print "--------------------------------------------------------------------------------"
+  print "received " received " of " total " packets from all flows (" received*100.0/total "%)"
+  print "lost " total - received " packets (" (total-received)*100.0/total "%)"
+  print "--------------------------------------------------------------------------------"
+}
