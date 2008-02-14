@@ -35,7 +35,11 @@ END {
     total += max[i]-min[i]+1
   }
   print "--------------------------------------------------------------------------------"
-  print "received " received " of " total " packets from all flows (" received*100.0/total "%)"
-  print "lost " total - received " packets (" (total-received)*100.0/total "%)"
+  if (total == "") {
+    print "no packets received"
+  } else {
+    print "received " received " of " total " packets from all flows (" received*100.0/total "%)"
+    print "lost " total - received " packets (" (total-received)*100.0/total "%)"
+  }
   print "--------------------------------------------------------------------------------"
 }
