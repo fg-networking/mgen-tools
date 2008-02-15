@@ -1,6 +1,6 @@
 #! /usr/bin/awk -f
 
-# ignore the first n packets of every stream
+# ignore the first n packets of every flow
 # Copyright (C) 2008 Erik Auerswald <auerswald@fg-networking.de>
 #
 # usage: ignore-startup_phase [-v skip=NUMBER] [FILE...]

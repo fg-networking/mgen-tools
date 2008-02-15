@@ -3,6 +3,7 @@
 # filter mgen output to show lost packets
 # Copyright (C) 2008 Erik Auerswald <auerswald@fg-networking.de>
 #
+# usage: packet-loss-filter [FILE...]
 # lost and reordered packets cannot be discriminated
 # useful when just a few packets are lost
 #
