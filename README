@@ -1,0 +1,7 @@
+Tools to analze MGEN logfiles:
+
+ignore-startup_phase      remove the first n receive-events from every flow
+packet-loss-filter        print a message for lost or too late packets
+packet-loss-analyzer      count number of received packets and print statistics
+                          for each flow and a summary
+packet-dup-loss-analyzer  print lost or duplicated packet per flow
