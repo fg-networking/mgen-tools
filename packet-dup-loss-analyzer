@@ -5,7 +5,7 @@
 #
 # usage: packet-dup-loss-analyzer [FILE...]
 #
-# print lost or duplicated packets per flow
+# print lost or duplicated packets
 # packets lost after the last received packet are not counted
 
 # count received packets and determine range of sequence numbers
@@ -37,22 +37,14 @@ END {
   for (f in flow_numbers) {
     for (s = min[f]; s <= max[f]; s++) {
       if (flows[f,s] == 0) {
-        if (flow_numbers[f] == "used") {
-          printf "Flow %d:",f
-          flow_numbers[f] = "need_nl"
-        }
-        printf " Packet %d lost.",s
+        print "packet " s " from flow " f " lost"
       } else if (flows[f,s] > 1) {
         if (flow_numbers[f] == "used") {
           printf "Flow %d:",f
           flow_numbers[f] = "need_nl"
         }
-        printf " Packet %d received %d times.",s,flows[f,s]
+        print "packet " s " from flow " f " received " flows[f,s] " times"
       }
-    }
-    if (flow_numbers[f] == "need_nl") {
-      printf "\n"
-      flow_numbers[f] = "printed_nl"
     }
   }
 }
