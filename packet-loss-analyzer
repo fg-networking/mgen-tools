@@ -14,7 +14,7 @@
   split($3, flow, />/)
   split($4, seq, />/)
 
-  if (flows[flow[2]] == 0) {
+  if (flows[flow[2]] == "") {
     min[flow[2]] = seq[2]
     max[flow[2]] = seq[2]
   } else {
