@@ -30,8 +30,8 @@
 
 # print lost and duplicated packets
 END {
-  for (f in flows) {
-    split(f, i, SUBSEP)
+  for (fl in flows) {
+    split(fl, i, SUBSEP)
     flow_numbers[i[1]] = "used"
   }
   for (f in flow_numbers) {
@@ -44,7 +44,7 @@ END {
         printf " Packet %d lost.",s
       } else if (flows[f,s] > 1) {
         if (flow_numbers[f] == "used") {
-          printf "Flow %d:",j
+          printf "Flow %d:",f
           flow_numbers[f] = "need_nl"
         }
         printf " Packet %d received %d times.",s,flows[f,s]
