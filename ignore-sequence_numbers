@@ -8,7 +8,7 @@
 
 BEGIN {
   if ((low == "") && (high == "")) {
-    print "WARNING: Keeping every packet. Use -v low=L -v high=H to keep packets in [L,H]"
+    print "WARNING: Keeping every packet. Use -v low=L -v high=H to keep packets in [L,H]" > "/dev/stderr"
   }
 }
 
