@@ -1,0 +1,22 @@
+#! /usr/bin/awk -f
+
+# ignore the packets with sequence numnbers not in [low, high]
+# Copyright (C) 2008 Erik Auerswald <auerswald@fg-networking.de>
+#
+# usage: ignore-sequence_numbers [-v low=NUMBER] [-v high=NUMBER] [FILE...]
+# default interval is [0,0] (keep every packet)
+
+BEGIN {
+  if ((low == "") && (high == "")) {
+    print "WARNING: Keeping every packet. Use -v low=L -v high=H to keep packets in [L,H]"
+  }
+}
+
+/RECV/ {
+  split($4, seq, />/)
+  if ((seq[2] >= low) && ((high == "") || (seq[2] <= high))) {
+    print
+  }
+}
+
+!/RECV/ { print }
