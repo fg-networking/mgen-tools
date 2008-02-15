@@ -1,0 +1,22 @@
+#! /usr/bin/awk -f
+
+# ignore the first n packets of every stream
+# Copyright (C) 2008 Erik Auerswald <auerswald@fg-networking.de>
+#
+# usage: ignore-startup_phase [-v skip=NUMBER] [FILE...]
+# the number of packets to ignore defaults to 92
+
+BEGIN {
+  if (skip == "") { skip = 92 }
+}
+
+/RECV/ {
+  split($3, flow, />/)
+  if (hist[flow[2]] <= skip) {
+    hist[flow[2]]++
+  } else {
+    print
+  }
+}
+
+!/RECV/ { print }
