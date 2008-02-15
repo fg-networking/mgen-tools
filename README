@@ -6,7 +6,7 @@ packet-loss-filter        print a message for lost or too late packets
 packet-reorder-filter     print a message for reordered packets
 packet-loss-analyzer      count number of received packets and print statistics
                           for each flow and a summary
-packet-dup-loss-analyzer  print lost or duplicated packet per flow
+packet-dup-loss-analyzer  print lost or duplicated packets
 
 ignore-startup_phase and ignore-sequence_numbers expect the option '-v' to set
 variables.
