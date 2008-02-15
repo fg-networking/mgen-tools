@@ -1,0 +1,27 @@
+#! /usr/bin/awk -f
+
+# filter mgen output to show reordered packets
+# Copyright (C) 2008 Erik Auerswald <auerswald@fg-networking.de>
+#
+# usage: packet-reorder-filter [FILE...]
+# print a message for each late or early arriving packet
+# duplicated packets are reported as late
+# an early packet might mean package loss
+# (this is essentially the same as packet-loss-filter)
+#
+# packets lost after the last received packet are not counted
+
+/RECV/ {
+  split($3, flow, />/)
+  split($4, seq, />/)
+  if (next_packet[flow[2]] == "") {
+    next_packet[flow[2]]=seq[2]+1
+  } else if (seq[2]>next_packet[flow[2]]) {
+    print "packet " seq[2] " of flow " flow[2] " early  (at " $1 ")"
+    next_packet[flow[2]]=seq[2]+1
+  } else if (seq[2]<next_packet[flow[2]]) {
+      print "packet " seq[2] " of flow " flow[2] " late (at " $1 ")"
+  } else {
+    next_packet[flow[2]]++
+  }
+}
