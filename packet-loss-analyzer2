@@ -1,0 +1,58 @@
+#! /usr/bin/awk -f
+
+# analyse an mgen log file for lost packets
+# Copyright (C) 2008 Erik Auerswald <auerswald@fg-networking.de>
+#
+# usage: packet-dup-loss-analyzer [FILE...]
+#
+# print lost or duplicated packets per flow
+# packets lost after the last received packet are not counted
+
+# count received packets and determine range of sequence numbers
+/RECV/ {
+  split($3, flow, />/)
+  split($4, seq, />/)
+
+  if (flows[flow[2]] == 0) {
+    min[flow[2]] = seq[2]
+    max[flow[2]] = seq[2]
+  } else {
+    if (seq[2] < min[flow[2]]) {
+      min[flow[2]] = seq[2]
+    }
+    if (seq[2] > max[flow[2]]) {
+      max[flow[2]] = seq[2]
+    }
+  }
+  flows[flow[2],seq[2]]++
+  flows[flow[2]]++
+}
+
+# print lost and duplicated packets
+END {
+  for (f in flows) {
+    split(f, i, SUBSEP)
+    flow_numbers[i[1]] = "used"
+  }
+  for (f in flow_numbers) {
+    for (s = min[f]; s <= max[f]; s++) {
+      if (flows[f,s] == 0) {
+        if (flow_numbers[f] == "used") {
+          printf "Flow %d:",f
+          flow_numbers[f] = "need_nl"
+        }
+        printf " Packet %d lost.",s
+      } else if (flows[f,s] > 1) {
+        if (flow_numbers[f] == "used") {
+          printf "Flow %d:",j
+          flow_numbers[f] = "need_nl"
+        }
+        printf " Packet %d received %d times.",s,flows[f,s]
+      }
+    }
+    if (flow_numbers[f] == "need_nl") {
+      printf "\n"
+      flow_numbers[f] = "printed_nl"
+    }
+  }
+}
