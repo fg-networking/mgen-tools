@@ -1,1 +1,4 @@
 - Tool, das das _letzte_ umsortierte oder fehlende Paket pro Stream ausgibt
+  - packet-reorder-filter | fgrep early | sort -n -k 2
+    (die hoechste Sequenz-Nummer steht unten -> Ziel ist mehr oder weniger
+    erreicht)
