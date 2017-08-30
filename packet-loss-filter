@@ -1,7 +1,7 @@
 #! /usr/bin/awk -f
 
 # filter mgen output to show lost packets
-# Copyright (C) 2008 Erik Auerswald <auerswald@fg-networking.de>
+# Copyright (C) 2008,2017 Erik Auerswald <auerswald@fg-networking.de>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -28,8 +28,8 @@
 # packets lost after the last received packet are not counted
 
 /RECV/ {
-  split($3, flow, />/)
-  split($4, seq, />/)
+  split($4, flow, />/)
+  split($5, seq, />/)
   if (next_packet[flow[2]] == "") {
     next_packet[flow[2]]=seq[2]+1
   } else if (seq[2]>next_packet[flow[2]]) {
