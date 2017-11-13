@@ -1,4 +1,3 @@
-- Tool, das das _letzte_ umsortierte oder fehlende Paket pro Stream ausgibt
+- add a tool to print the last re-ordered or missing packet per stream
   - packet-reorder-filter | fgrep early | sort -n -k 2
-    (die hoechste Sequenz-Nummer steht unten -> Ziel ist mehr oder weniger
-    erreicht)
+    (highest sequence number at bottom -> goal is more or less fulfilled)
