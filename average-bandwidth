@@ -1,0 +1,94 @@
+#! /usr/bin/awk -f
+
+# analyse an mgen log file for average bandwidth and loss
+# Copyright (C) 2008,2017,2021 Erik Auerswald <auerswald@fg-networking.de>
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+# usage: average-bandwidth [FILE...]
+#
+# print print average bandwidth and loss ratio, aggregated over all flows
+# packets lost after the last received packet are ignored
+
+BEGIN {
+  print "started at " strftime()
+  printf "reading data..."
+  fflush()
+}
+
+# count received packets,
+# count received bytes,
+# determine start and end times,
+# determine range of sequence numbers
+/RECV/ {
+  split($3, proto, />/)
+  split($4, flow, />/)
+  split($5, seq, />/)
+  split($9, size, />/)
+
+  if (!start_time) {
+    start_time = $1
+  } else {
+    end_time = $1
+  }
+  if (flows[flow[2]] == "") {
+    min[flow[2]] = seq[2]
+    max[flow[2]] = seq[2]
+  } else {
+    if (seq[2] < min[flow[2]]) {
+      min[flow[2]] = seq[2]
+    }
+    if (seq[2] > max[flow[2]]) {
+      max[flow[2]] = seq[2]
+    }
+  }
+  flows[flow[2]]++
+  bytes[flow[2]] += size[2]
+  if (proto[2] == UDP) {
+    bytes[flow[2]] += 28
+  }
+}
+
+# print average bandwidth and packet loss
+END {
+  print "done.\nfinished reading data at " strftime()
+  for (fl in flows) {
+    num_flows++
+    total_bytes += bytes[fl]
+    total_received += flows[fl]
+    total_sent += max[fl] + 1  # sequence numbers start with 0
+  }
+  print "number of flows: " num_flows
+  print "total bytes received: " total_bytes
+  print "total packets received: " total_received
+  print "total packets sent: " total_sent
+  start_time_command = "date +%s.%N --date=" start_time
+  start_time_command | getline start_time
+  print "start time: " start_time
+  end_time_command = "date +%s.%N --date=" end_time
+  end_time_command | getline end_time
+  print "end time: " end_time
+  duration = end_time - start_time
+  print "duration: " duration
+  bandwidth = total_bytes * 8 / duration
+  print "bandwidth: " bandwidth "b/s"
+  loss_percentage = 100 * (total_sent - total_received) / total_sent
+  print "packet loss: " loss_percentage "%"
+  print "finished at " strftime()
+}

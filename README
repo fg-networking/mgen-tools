@@ -1,5 +1,6 @@
 Tools to analze MGEN logfiles:
 
+average-bandwidth         compute overall average bandwidth and other statistics
 ignore-startup_phase      remove the first n receive-events from every flow
 ignore-sequence_numbers   keep packets with sequence numbers in [low,high]
 packet-loss-filter        print a message for lost or too late packets
