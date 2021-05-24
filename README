@@ -9,5 +9,20 @@ packet-loss-analyzer      count number of received packets and print statistics
                           for each flow and a summary
 packet-dup-loss-analyzer  print lost or duplicated packets
 
-ignore-startup_phase and ignore-sequence_numbers expect the option '-v' to set
-variables.
+Some tools support setting variables via Awk option "-v VARIABLE=VALUE":
+ - ignore-startup_phase    uses the variable "skip" to ignore the first skip+1
+                           receive events per flow (default: skip=92)
+ - ignore-sequence_numbers uses the variables "low" and "high" to ignore receive
+                           events with sequence numbers outside the closed
+                           interval [low, high] (defaults: low=0, high=infinity)
+
+Some tools read all input before any output, others produce output immediately:
+ - Immediate output:
+   - ignore-startup_phase
+   - ignore-sequence_numbers
+   - packet-loss-filter
+   - packet-reorder-filter
+ - Output generation after reading input completely:
+   - average-bandwidth
+   - packet-dup-loss-analyzer
+   - packet-loss-analyzer
