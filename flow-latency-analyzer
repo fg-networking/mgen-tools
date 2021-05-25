@@ -35,27 +35,12 @@ function mgen_ts_to_seconds(ts) {
 # put received packet data into variables
 $2 ~ /RECV/ {
   recv_time = mgen_ts_to_seconds($1)
-  split($3, proto, />/)
   split($4, flow, />/)
-  split($5, seq, />/)
-  split($6, src, />/)
-  split(src[2], src_ip_port, /\//)
-  split($7, dst, />/)
-  split(dst[2], dst_ip_port, /\//)
   split($8, sent, />/)
   sent_time = mgen_ts_to_seconds(sent[2])
-  split($9, size, />/)
-  if (NF >= 10) {
-    split($10, gps, />/)
-    split(gps[2], gps_info, /,/)
-  }
 
   # keep package count to be independent of reordered packets
-  if (count[flow[2]] == "") {
-    count[flow[2]] = 1
-  } else {
-    count[flow[2]]++
-  }
+  count[flow[2]]++
 
   # maybe split this into a function with problem handling
   latency = recv_time - sent_time
@@ -76,7 +61,8 @@ $2 ~ /RECV/ {
   if (avg_latency[flow[2]] == "") {
     avg_latency[flow[2]] = latency
   } else {
-    avg_latency[flow[2]] = (avg_latency[flow[2]] * (count[flow[2]] - 3) + latency) / count[flow[2]]
+  # new avg latency = (old avg latency * (n-1) + latency) / n
+    avg_latency[flow[2]] = (avg_latency[flow[2]] * (count[flow[2]] - 1) + latency) / count[flow[3]]
   }
 }
 
