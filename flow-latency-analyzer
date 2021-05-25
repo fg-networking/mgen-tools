@@ -23,7 +23,7 @@
 #
 # usage: flow-latency-analyzer [FILE...]
 # min, max and average latency for every flow are printed seperately
-# the total number of received is printed as well
+# the total number of received packets is printed as well
 #
 
 # convert MGEN timestamp to seconds
