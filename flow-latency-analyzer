@@ -62,7 +62,7 @@ $2 ~ /RECV/ {
     avg_latency[flow[2]] = latency
   } else {
   # new avg latency = (old avg latency * (n-1) + latency) / n
-    avg_latency[flow[2]] = (avg_latency[flow[2]] * (count[flow[2]] - 1) + latency) / count[flow[3]]
+    avg_latency[flow[2]] = (avg_latency[flow[2]] * (count[flow[2]] - 1) + latency) / count[flow[2]]
   }
 }
 
