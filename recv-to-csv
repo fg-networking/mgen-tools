@@ -55,8 +55,10 @@ $2 ~ /RECV/ {
   split($8, sent, />/)
   sent_time = mgen_ts_to_seconds(sent[2])
   split($9, size, />/)
-  split($10, gps, />/)
-  split(gps[2], gps_info, /,/)
+  if (NF >= 10) {
+    split($10, gps, />/)
+    split(gps[2], gps_info, /,/)
+  }
   print recv_time, sent_time, flow[2], seq[2], proto[2], src_ip_port[1], \
         src_ip_port[2], dst_ip_port[1], dst_ip_port[2], size[2], gps_info[1], \
         gps_info[2] , gps_info[3], gps_info[4]
