@@ -1,6 +1,7 @@
 Tools to analze MGEN logfiles:
 
 average-bandwidth         compute overall average bandwidth and other statistics
+flow-latency-analyzer     calculate min, max and average latency of flows
 ignore-sequence_numbers   keep packets with sequence numbers in [low,high]
 ignore-startup_phase      remove the first n receive events from every flow
 packet-dup-loss-analyzer  print lost or duplicated packets

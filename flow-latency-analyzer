@@ -1,0 +1,88 @@
+#! /usr/bin/awk -f
+
+# calculate latency of received packets and print statistics (per flow)
+# Copyright (C) 2021 Sebastian Deusser <deusser@fg-networking.de>
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+# usage: flow-latency-analyzer [FILE...]
+# min, max and average latency for every flow are printed seperately
+# the total number of received is printed as well
+#
+
+# convert MGEN timestamp to seconds
+function mgen_ts_to_seconds(ts) {
+  split(ts, ts_parts, /:/)
+  return 3600 * ts_parts[1] + 60 * ts_parts[2] + ts_parts[3]
+}
+
+# put received packet data into variables
+$2 ~ /RECV/ {
+  recv_time = mgen_ts_to_seconds($1)
+  split($3, proto, />/)
+  split($4, flow, />/)
+  split($5, seq, />/)
+  split($6, src, />/)
+  split(src[2], src_ip_port, /\//)
+  split($7, dst, />/)
+  split(dst[2], dst_ip_port, /\//)
+  split($8, sent, />/)
+  sent_time = mgen_ts_to_seconds(sent[2])
+  split($9, size, />/)
+  if (NF >= 10) {
+    split($10, gps, />/)
+    split(gps[2], gps_info, /,/)
+  }
+
+  # keep package count to be independent of reordered packets
+  if (count[flow[2]] == "") {
+    count[flow[2]] = 1
+  } else {
+    count[flow[2]]++
+  }
+
+  # maybe split this into a function with problem handling
+  latency = recv_time - sent_time
+
+  if (min_latency[flow[2]] == "") {
+    min_latency[flow[2]] = latency
+  } else if (min_latency[flow[2]] > latency) {
+    min_latency[flow[2]] = latency
+  }
+
+  if (max_latency[flow[2]] == "") {
+    max_latency[flow[2]] = latency
+  } else if (max_latency[flow[2]] < latency) {
+    max_latency[flow[2]] = latency
+  }
+
+  # keep running average latency
+  if (avg_latency[flow[2]] == "") {
+    avg_latency[flow[2]] = latency
+  } else {
+    avg_latency[flow[2]] = (avg_latency[flow[2]] * (count[flow[2]] - 3) + latency) / count[flow[2]]
+  }
+}
+
+# print statistics
+END {
+  for (i in count) {
+    print "flow " i " latencies: min. " min_latency[i] ", max. " max_latency[i] ", avg. " avg_latency[i] " over " count[i] " received packets"
+  }
+}
