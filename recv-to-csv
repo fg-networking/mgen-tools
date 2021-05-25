@@ -1,0 +1,63 @@
+#! /usr/bin/awk -f
+
+# recv-to-csv - print RECV events from MGEN log in CSV format
+# Copyright (C) 2021 Erik Auerswald <auerswald@fg-networking.de>
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+# usage: recv-to-csv [-v sep=SEP] [FILE...]
+#
+# print a table of RECV events in CSV format (default: sep=,)
+# starting with a header line followed by one line per RECV event
+
+# convert MGEN timestamp to seconds
+function mgen_ts_to_seconds(ts) {
+  split(ts, ts_parts, /:/)
+  return 3600 * ts_parts[1] + 60 * ts_parts[2] + ts_parts[3]
+}
+
+# initialize separator variable and print header line
+BEGIN {
+  if (sep == "") { sep = "," }
+  OFS = sep
+  OFMT = "%.6f" # MGEN timestamps have microsecond resolution
+  print "Received Time", "Sent Time", "Flow ID", "Sequence No.", "Protocol", \
+        "Source IP", "Source Port", "Destination IP", "Destination Port", \
+        "Packet Size", "GPS Status", "Latitude", "Longitude", "Altitude"
+}
+
+# only RECV events are printed as CSV lines
+$2 ~ /RECV/ {
+  recv_time = mgen_ts_to_seconds($1)
+  split($3, proto, />/)
+  split($4, flow, />/)
+  split($5, seq, />/)
+  split($6, src, />/)
+  split(src[2], src_ip_port, /\//)
+  split($7, dst, />/)
+  split(dst[2], dst_ip_port, /\//)
+  split($8, sent, />/)
+  sent_time = mgen_ts_to_seconds(sent[2])
+  split($9, size, />/)
+  split($10, gps, />/)
+  split(gps[2], gps_info, /,/)
+  print recv_time, sent_time, flow[2], seq[2], proto[2], src_ip_port[1], \
+        src_ip_port[2], dst_ip_port[1], dst_ip_port[2], size[2], gps_info[1], \
+        gps_info[2] , gps_info[3], gps_info[4]
+}

@@ -2,12 +2,14 @@ Tools to analze MGEN logfiles:
 
 average-bandwidth         compute overall average bandwidth and other statistics
 ignore-sequence_numbers   keep packets with sequence numbers in [low,high]
-ignore-startup_phase      remove the first n receive-events from every flow
+ignore-startup_phase      remove the first n receive events from every flow
 packet-dup-loss-analyzer  print lost or duplicated packets
 packet-loss-analyzer      count number of received packets and print statistics
                           for each flow and a summary
 packet-loss-filter        print a message for lost or too late packets
 packet-reorder-filter     print a message for reordered packets
+recv-to-csv               create CSV table (with header) of receive events
+                          (time stamps are converted into seconds)
 
 Some tools support setting variables via Awk option "-v VARIABLE=VALUE":
  - ignore-sequence_numbers uses the variables "low" and "high" to ignore receive
@@ -15,6 +17,8 @@ Some tools support setting variables via Awk option "-v VARIABLE=VALUE":
                            interval [low, high] (defaults: low=0, high=infinity)
  - ignore-startup_phase    uses the variable "skip" to ignore the first skip+1
                            receive events per flow (default: skip=92)
+ - recv-to-csv             uses the variable "sep" to specify the separator
+                           string (default: sep=,)
 
 Some tools read all input before any output, others produce output immediately:
  - Immediate output:
@@ -22,6 +26,7 @@ Some tools read all input before any output, others produce output immediately:
    - ignore-startup_phase
    - packet-loss-filter
    - packet-reorder-filter
+   - recv-to-csv
  - Output generation after reading input completely:
    - average-bandwidth
    - packet-dup-loss-analyzer
