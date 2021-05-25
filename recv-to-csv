@@ -39,7 +39,7 @@ BEGIN {
   OFMT = "%.6f" # MGEN timestamps have microsecond resolution
   print "Received Time", "Sent Time", "Flow ID", "Sequence No.", "Protocol", \
         "Source IP", "Source Port", "Destination IP", "Destination Port", \
-        "Packet Size", "GPS Status", "Latitude", "Longitude", "Altitude"
+        "Protocol Payload Size", "GPS Status", "Latitude", "Longitude", "Altitude"
 }
 
 # only RECV events are printed as CSV lines
