@@ -1,6 +1,10 @@
 Tools to analze MGEN logfiles:
 
 average-bandwidth         compute overall average bandwidth and other statistics
+flow-info-csv             create CSV table (with header) of info about the
+                          streams included in the log like src/dst IPs, creates
+                          lists of values for more dynamic streams (or mutilply
+                          used stream IDs)
 flow-latency-analyzer     calculate min, max and average latency of flows
 ignore-sequence_numbers   keep packets with sequence numbers in [low,high]
 ignore-startup_phase      remove the first n receive events from every flow
@@ -13,6 +17,9 @@ recv-to-csv               create CSV table (with header) of receive events
                           (time stamps are converted into seconds)
 
 Some tools support setting variables via Awk option "-v VARIABLE=VALUE":
+ - flow-info-csv           uses the variable "sep" to specify the separator
+                           string (default: sep=,) and the list seperator for
+                           the potential lists of values (default: lstsep= )
  - ignore-sequence_numbers uses the variables "low" and "high" to ignore receive
                            events with sequence numbers outside the closed
                            interval [low, high] (defaults: low=0, high=infinity)
@@ -30,5 +37,7 @@ Some tools read all input before any output, others produce output immediately:
    - recv-to-csv
  - Output generation after reading input completely:
    - average-bandwidth
+   - flow-info-csv
+   - flow-latency-analyzer
    - packet-dup-loss-analyzer
    - packet-loss-analyzer

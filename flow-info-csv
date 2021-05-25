@@ -1,0 +1,81 @@
+#! /usr/bin/awk -f
+
+# recv-to-csv - print RECV events from MGEN log in CSV format
+# Copyright (C) 2021 Sebastian Deusser <deusser@fg-networking.de>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+# usage: flow-info-csv [-v sep=SEP] [-v lstsep=SEP] [FILE...]
+#
+# print a table of flow info in CSV format (default: sep=,)
+# starting with a header line followed by one line per flow
+
+function append_if_not_included(lst,value) {
+  if (lst == "") {return value}
+  if (index(lst,value) == 0) {
+    lst = lst lstsep value
+  }
+  return lst
+}
+
+# initialize separator variable and print header line
+BEGIN {
+  if (sep == "") { sep = "," }
+  if (lstsep == "") { lstsep = " " }
+  OFS = sep
+  print "Flow ID", "Source IP", "Source Port", "Destination IP", \
+        "Destination Port", "Protocol", "Protocol Payload Size", \
+        "Received Packets Count", "GPS Status", "Latitude", "Longitude", \
+        "Altitude"
+}
+
+# only RECV events have data about the flows
+$2 ~ /RECV/ {
+  split($3, proto, />/)
+  split($4, flow, />/)
+  split($6, src, />/)
+  split(src[2], src_ip_port, /\//)
+  split($7, dst, />/)
+  split(dst[2], dst_ip_port, /\//)
+  split($9, size, />/)
+  if (NF >= 10) {
+    split($10, gps, />/)
+    split(gps[2], gps_info, /,/)
+  }
+
+  count[flow[2]]++
+  protolist[flow[2]] = append_if_not_included(protolist[flow[2]],proto[2])
+  srciplist[flow[2]] = append_if_not_included(srciplist[flow[2]],src_ip_port[1])
+  srcportlist[flow[2]] = append_if_not_included(srcportlist[flow[2]],src_ip_port[2])
+  dstiplist[flow[2]] = append_if_not_included(dstiplist[flow[2]],dst_ip_port[1])
+  dstportlist[flow[2]] = append_if_not_included(dstportlist[flow[2]],dst_ip_port[2])
+  sizelist[flow[2]] = append_if_not_included(sizelist[flow[2]],size[2])
+  gpslist1[flow[2]] = append_if_not_included(gpslist1[flow[2]],gps_info[1])
+  gpslist2[flow[2]] = append_if_not_included(gpslist2[flow[2]],gps_info[2])
+  gpslist3[flow[2]] = append_if_not_included(gpslist3[flow[2]],gps_info[3])
+  gpslist4[flow[2]] = append_if_not_included(gpslist4[flow[2]],gps_info[4])
+}
+
+END {
+  for (i in count) {
+    print i, srciplist[i], srcportlist[i], dstiplist[i], dstportlist[i], \
+          protolist[i], sizelist[i], count[i], gpslist1[i], gpslist2[i], \
+          gpslist3[i], gpslist4[i]
+  }
+}
