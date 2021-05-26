@@ -87,7 +87,7 @@ END {
   print "start time: " start_time
   print "end time: " end_time
   duration = mgen_ts_to_seconds(end_time) - mgen_ts_to_seconds(start_time)
-  print "duration: " duration
+  print "duration: " duration "s"
   bandwidth = total_bytes * 8 / duration
   print "bandwidth: " bandwidth "b/s"
   loss_percentage = 100 * (total_sent - total_received) / total_sent
