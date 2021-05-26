@@ -3,7 +3,7 @@ Tools to analze MGEN logfiles:
 average-bandwidth         compute overall average bandwidth and other statistics
 flow-info-csv             create CSV table (with header) of info about the
                           streams included in the log like src/dst IPs, creates
-                          lists of values for more dynamic streams (or mutilply
+                          lists of values for more dynamic streams (or multiply
                           used stream IDs)
 flow-latency-analyzer     calculate min, max and average latency of flows
 ignore-sequence_numbers   keep packets with sequence numbers in [low,high]
