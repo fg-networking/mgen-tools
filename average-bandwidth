@@ -26,6 +26,12 @@
 # print print average bandwidth and loss ratio, aggregated over all flows
 # packets lost after the last received packet are ignored
 
+# convert MGEN timestamp to seconds
+function mgen_ts_to_seconds(ts) {
+  split(ts, ts_parts, /:/)
+  return 3600 * ts_parts[1] + 60 * ts_parts[2] + ts_parts[3]
+}
+
 BEGIN {
   print "started at " strftime()
   printf "reading data..."
@@ -78,13 +84,9 @@ END {
   print "total bytes received: " total_bytes
   print "total packets received: " total_received
   print "total packets sent: " total_sent
-  start_time_command = "date +%s.%N --date=" start_time
-  start_time_command | getline start_time
   print "start time: " start_time
-  end_time_command = "date +%s.%N --date=" end_time
-  end_time_command | getline end_time
   print "end time: " end_time
-  duration = end_time - start_time
+  duration = mgen_ts_to_seconds(end_time) - mgen_ts_to_seconds(start_time)
   print "duration: " duration
   bandwidth = total_bytes * 8 / duration
   print "bandwidth: " bandwidth "b/s"
