@@ -18,8 +18,9 @@ recv-to-csv               create CSV table (with header) of receive events
 
 Some tools support setting variables via Awk option "-v VARIABLE=VALUE":
  - flow-info-csv           uses the variable "sep" to specify the separator
-                           string (default: sep=,) and the list seperator for
-                           the potential lists of values (default: lstsep= )
+                           string (default: sep=,) and the variable "lstsep"
+                           to specify the list seperator for the potential
+                           lists of values (default: lstsep=' ')
  - ignore-sequence_numbers uses the variables "low" and "high" to ignore receive
                            events with sequence numbers outside the closed
                            interval [low, high] (defaults: low=0, high=infinity)
@@ -41,3 +42,6 @@ Some tools read all input before any output, others produce output immediately:
    - flow-latency-analyzer
    - packet-dup-loss-analyzer
    - packet-loss-analyzer
+
+Tools producing CSV output can be used in combination with third party software,
+e.g., LibreOffice Calc, GNU datamash, or q - Text as Data.
