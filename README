@@ -1,4 +1,4 @@
-Tools to analze MGEN logfiles:
+Tools to analyze MGEN logfiles:
 
 average-bandwidth         compute overall average bandwidth and other statistics
 flow-info-csv             create CSV table (with header) of info about the
