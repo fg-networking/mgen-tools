@@ -1,0 +1,122 @@
+#! /usr/bin/awk -f
+
+# flow-statistics - compute and print per flow statistics
+# Copyright (C) 2021 Erik Auerswald <auerswald@fg-networking.de>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+# usage: flow-statistics [FILE...]
+#
+# print per flow statistics:
+# - protocol, source IP, source port, destination IP, destination port
+# - lowest and highest sequence numbers
+# - number of sent, received, and lost packets
+# - percentage of packets lost
+# - minimum and maximum packet payload sizes
+# - amount of bytes received
+# - earliest and latest sent timestamps
+# - earliest and latest receive timestamps
+# - average bandwidth
+# - minimum and maximum latencies
+# - minimum and maximum packet inter-arrival times
+
+# convert MGEN timestamp to seconds
+function mgen_ts_to_seconds(ts) {
+  split(ts, ts_parts, /:/)
+  return 3600 * ts_parts[1] + 60 * ts_parts[2] + ts_parts[3]
+}
+
+BEGIN {
+  OFMT = "%.6f" # MGEN timestamps have microsecond resolution
+}
+
+# collect per-flow information from RECV events
+$2 ~ /RECV/ {
+  c_recv = mgen_ts_to_seconds($1)
+  split($3, c_proto_a, />/); c_proto = c_proto_a[2]
+  split($4, c_flow_a, />/); c_flow = c_flow_a[2]
+  split($5, c_seq_a, />/); c_seq = c_seq_a[2]
+  split($6, c_src_a, />/); split(c_src_a[2], c_src_ip_port_a, /\//)
+  c_src_ip = c_src_ip_port_a[1]; c_src_port = c_src_ip_port_a[2]
+  split($7, c_dst_a, />/); split(c_dst_a[2], c_dst_ip_port_a, /\//)
+  c_dst_ip = c_dst_ip_port_a[1]; c_dst_port = c_dst_ip_port_a[2]
+  split($8, c_sent_a, />/); c_sent = mgen_ts_to_seconds(c_sent_a[2])
+  split($9, c_size_a, />/); c_size = c_size_a[2]
+  c_lat = c_recv - c_sent
+  num_recv[c_flow]++
+  bytes_recv[c_flow] += c_size
+  if (proto[c_flow] == "") { proto[c_flow] = c_proto }
+  if (src_ip[c_flow] == "") { src_ip[c_flow] = c_src_ip }
+  if (src_port[c_flow] == "") { src_port[c_flow] = c_src_port }
+  if (dst_ip[c_flow] == "") { dst_ip[c_flow] = c_dst_ip }
+  if (dst_port[c_flow] == "") { dst_port[c_flow] = c_dst_port }
+  if ((min_seq[c_flow] == "") || (c_seq < min_seq[c_flow])) {
+    min_seq[c_flow] = c_seq
+  }
+  if (max_seq[c_flow] < c_seq) { max_seq[c_flow] = c_seq }
+  if ((min_size[c_flow] == "") || (c_size < min_size[c_flow])) {
+    min_size[c_flow] = c_size
+  }
+  if (c_size > max_size[c_flow]) { max_size[c_flow] = c_size }
+  if (!first_recv_time[c_flow]) { first_recv_time[c_flow] = c_recv }
+  last_recv_time[c_flow] = c_recv
+  if (!first_sent_time[c_flow]) { first_sent_time[c_flow] = c_sent }
+  last_sent_time[c_flow] = c_sent
+  if ((min_lat[c_flow] == "") || (c_lat < min_lat[c_flow])) {
+    min_lat[c_flow] = c_lat
+  }
+  if (c_lat > max_lat[c_flow]) { max_lat[c_flow] = c_lat }
+  if (!last_recv[c_flow]) {
+    last_recv[c_flow] = c_recv
+  } else {
+    c_delta = c_recv - last_recv[c_flow]
+    if ((min_delta[c_flow] == "") || (c_delta < min_delta[c_flow])) {
+      min_delta[c_flow] = c_delta
+    }
+    if (c_delta > max_delta[c_flow]) { max_delta[c_flow] = c_delta }
+    last_recv[c_flow] = c_recv
+  }
+}
+
+# print per flow statistics
+END {
+  for (i in num_recv) {
+    print "flow " i ":"
+    print " " proto[i] " from " src_ip[i] ":" src_port[i] \
+                       " to "   dst_ip[i] ":" dst_port[i]
+    print " sequence number interval [" min_seq[i] ", " max_seq[i] "]"
+    packets_sent = max_seq[i] - min_seq[i] + 1
+    packets_lost = packets_sent - num_recv[i]
+    print " " packets_sent " packets sent, " num_recv[i] " packets received, " \
+              packets_lost " (" packets_lost * 100 / packets_sent \
+              "%) packets lost"
+    print " payload size interval [" min_size[i] "B, " max_size[i] "B]"
+    print " " bytes_recv[i] "B received"
+    print " first packet sent at     " first_sent_time[i] "s"
+    print " first packet received at " first_recv_time[i] "s"
+    print " last packet sent at      " last_sent_time[i] "s"
+    print " last packet received at  " last_recv_time[i] "s"
+    print " average bandwidth " bytes_recv[i]*8 / \
+                                (last_recv_time[i] - first_recv_time[i]) \
+                                "b/s"
+    print " latency interval [" min_lat[i] "s, " max_lat[i] "s]"
+    print " packet inter-arrival time interval [" \
+            min_delta[i] "s, " max_delta[i] "s]"
+  }
+}
