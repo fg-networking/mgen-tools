@@ -10,11 +10,11 @@ flow-latency-analyzer     calculate min, max and average latency of flows
 flow-statistics           compute per-flow statistics
 ignore-sequence_numbers   keep packets with sequence numbers in [low,high]
 ignore-startup_phase      remove the first n receive events from every flow
-packet-dup-loss-analyzer  print lost or duplicated packets
+packet-dup-loss-analyzer  print lost or duplicated packets, one line per packet
 packet-loss-analyzer      count number of received packets and print statistics
-                          for each flow and a summary
-packet-loss-filter        print a message for lost or too late packets
-packet-reorder-filter     print a message for reordered packets
+                          for each flow and a summary over all flows
+packet-loss-filter        print a message for each lost or too late packet
+packet-reorder-filter     print a message for each reordered packet
 recv-to-csv               create CSV table (with header) of receive events
                           (time stamps are converted into seconds)
 
