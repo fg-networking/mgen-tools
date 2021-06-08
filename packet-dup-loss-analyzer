@@ -57,10 +57,6 @@ END {
       if (flows[f,s] == 0) {
         print "packet " s " from flow " f " lost"
       } else if (flows[f,s] > 1) {
-        if (flow_numbers[f] == "used") {
-          printf "Flow %d:",f
-          flow_numbers[f] = "need_nl"
-        }
         print "packet " s " from flow " f " received " flows[f,s] " times"
       }
     }
