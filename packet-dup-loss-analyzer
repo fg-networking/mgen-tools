@@ -1,7 +1,7 @@
 #! /usr/bin/awk -f
 
 # analyse an mgen log file for lost packets
-# Copyright (C) 2008,2017 Erik Auerswald <auerswald@fg-networking.de>
+# Copyright (C) 2008,2017,2021 Erik Auerswald <auerswald@fg-networking.de>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
