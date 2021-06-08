@@ -35,10 +35,10 @@
   if (next_packet[flow[2]] == "") {
     next_packet[flow[2]]=seq[2]+1
   } else if (seq[2]>next_packet[flow[2]]) {
-    print "packet " seq[2] " of flow " flow[2] " early  (at " $1 ")"
+    print "packet " seq[2] " of flow " flow[2] " early (at " $1 ")"
     next_packet[flow[2]]=seq[2]+1
   } else if (seq[2]<next_packet[flow[2]]) {
-      print "packet " seq[2] " of flow " flow[2] " late (at " $1 ")"
+      print "packet " seq[2] " of flow " flow[2] " late  (at " $1 ")"
   } else {
     next_packet[flow[2]]++
   }
