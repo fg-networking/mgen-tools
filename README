@@ -6,7 +6,7 @@ flow-info-csv             create CSV table (with header) of info about the
                           streams included in the log like src/dst IPs, creates
                           lists of values for more dynamic streams (or multiply
                           used stream IDs)
-flow-latency-analyzer     calculate min, max and average latency of flows
+flow-latency-analyzer     calculate min, max, and average latency of flows
 flow-outages              print per flow per outage times and lost packets
 flow-statistics           compute per-flow statistics
 ignore-sequence_numbers   keep packets with sequence numbers in [low,high]
