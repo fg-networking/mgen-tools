@@ -1,0 +1,86 @@
+#! /usr/bin/awk -f
+
+# flow-outages - compute and print per flow outage times
+# Copyright (C) 2021 Erik Auerswald <auerswald@fg-networking.de>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+# usage: flow-outages [FILE...]
+#
+# print per flow per outage information:
+#  sequence number ranges and number of missing packets,
+#  start and end times as well as duration of outages
+
+# convert MGEN timestamp to seconds
+function mgen_ts_to_seconds(ts) {
+  split(ts, ts_parts, /:/)
+  return 3600 * ts_parts[1] + 60 * ts_parts[2] + ts_parts[3]
+}
+
+BEGIN {
+  OFMT = "%.6f" # MGEN timestamps have microsecond resolution
+}
+
+# take note of all received packets
+$2 ~ /RECV/ {
+  # extract receive timestamp, flow ID, and sequence number from log entry
+  recv_ts = $1
+  split($4, flow_a, />/); flow_id = flow_a[2]
+  split($5, seq_a, />/); seq_nr = seq_a[2]
+  # create an array of all used flows
+  flows[flow_id] = 1
+  # save sequence number ranges per flow
+  if ((min_seq[flow_id] == "") || (seq_nr < min_seq[flow_id])) {
+    min_seq[flow_id] = seq_nr
+  }
+  if (seq_nr > max_seq[flow_id]) {
+    max_seq[flow_id] = seq_nr
+  }
+  # save arrival time of each packet
+  packets[flow_id,seq_nr] = recv_ts
+}
+
+# determine outage periods and report them
+END {
+  for (flow_id in flows) {
+    for (seq_nr = min_seq[flow_id]; seq_nr <= max_seq[flow_id]; seq_nr++) {
+      if (!packets[flow_id,seq_nr]) {
+        if (flows[flow_id] == 1) {
+          print "Flow " flow_id ":"
+          flows[flow_id] = 2
+        }
+        start_seq = seq_nr
+        start_ts = packets[flow_id,seq_nr-1]
+        while (!packets[flow_id,seq_nr]) { seq_nr++ }
+        num_lost = seq_nr - start_seq
+        end_seq = seq_nr - 1
+        end_ts = packets[flow_id,seq_nr]
+        duration = mgen_ts_to_seconds(end_ts) - mgen_ts_to_seconds(start_ts)
+        if (num_lost == 1) {
+          print " outage from " start_ts " to " end_ts " (duration " duration \
+                "s), missing packet " start_seq
+        } else {
+          print " outage from " start_ts " to " end_ts " (duration " duration \
+                "s), missing packets " start_seq " to " end_seq " (" \
+                num_lost " packets)"
+        }
+      }
+    }
+  }
+}

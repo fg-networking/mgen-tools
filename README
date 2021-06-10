@@ -7,6 +7,7 @@ flow-info-csv             create CSV table (with header) of info about the
                           lists of values for more dynamic streams (or multiply
                           used stream IDs)
 flow-latency-analyzer     calculate min, max and average latency of flows
+flow-outages              print per flow outage times with lost packets
 flow-statistics           compute per-flow statistics
 ignore-sequence_numbers   keep packets with sequence numbers in [low,high]
 ignore-startup_phase      remove the first n receive events from every flow
@@ -42,6 +43,7 @@ Some tools read all input before any output, others produce output immediately:
    - average-bandwidth
    - flow-info-csv
    - flow-latency-analyzer
+   - flow-outages
    - flow-statistics
    - packet-dup-loss-analyzer
    - packet-loss-analyzer
