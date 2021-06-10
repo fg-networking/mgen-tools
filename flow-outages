@@ -62,7 +62,7 @@ END {
     for (seq_nr = min_seq[flow_id]; seq_nr <= max_seq[flow_id]; seq_nr++) {
       if (!packets[flow_id,seq_nr]) {
         if (flows[flow_id] == 1) {
-          print "Flow " flow_id ":"
+          print "flow " flow_id ":"
           flows[flow_id] = 2
         }
         start_seq = seq_nr
