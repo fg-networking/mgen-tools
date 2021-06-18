@@ -32,7 +32,10 @@
 # - amount of bytes received
 # - earliest and latest sent timestamps
 # - earliest and latest receive timestamps
-# - average bandwidth
+# - flow duration (based on first and last received packets)
+# - average sent packet rate (based on first and last received packets)
+# - average received packet rate
+# - average received bandwidth
 # - minimum and maximum latencies
 # - minimum and maximum packet inter-arrival times
 
