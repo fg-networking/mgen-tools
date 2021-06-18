@@ -114,6 +114,7 @@ END {
     print " last packet received at  " last_recv_time[i] "s"
     duration = last_recv_time[i] - first_recv_time[i]
     print " flow duration " duration "s"
+    print " average sent packet rate " packets_sent / duration "pps"
     print " average received packet rate " num_recv[i] / duration "pps"
     print " average received bandwidth " bytes_recv[i] * 8 / duration "b/s"
     print " latency interval [" min_lat[i] "s, " max_lat[i] "s]"
