@@ -103,13 +103,13 @@ END {
     print "flow " i ":"
     print " " proto[i] " from " src_ip[i] ":" src_port[i] \
                        " to "   dst_ip[i] ":" dst_port[i]
-    print " sequence number interval [" min_seq[i] ", " max_seq[i] "]"
+    print " sequence number interval [" min_seq[i] "," max_seq[i] "]"
     packets_sent = max_seq[i] - min_seq[i] + 1
     packets_lost = packets_sent - num_recv[i]
     print " " packets_sent " packets sent, " num_recv[i] " packets received, " \
               packets_lost " (" packets_lost * 100 / packets_sent \
               "%) packets lost"
-    print " payload size interval [" min_size[i] "B, " max_size[i] "B]"
+    print " payload size interval [" min_size[i] "B," max_size[i] "B]"
     print " " bytes_recv[i] "B received"
     print " first packet sent at     " first_sent_time[i] "s"
     print " first packet received at " first_recv_time[i] "s"
@@ -120,8 +120,8 @@ END {
     print " average sent packet rate " packets_sent / duration "pps"
     print " average received packet rate " num_recv[i] / duration "pps"
     print " average received bandwidth " bytes_recv[i] * 8 / duration "b/s"
-    print " latency interval [" min_lat[i] "s, " max_lat[i] "s]"
+    print " latency interval [" min_lat[i] "s," max_lat[i] "s]"
     print " packet inter-arrival time interval [" \
-            min_delta[i] "s, " max_delta[i] "s]"
+            min_delta[i] "s," max_delta[i] "s]"
   }
 }

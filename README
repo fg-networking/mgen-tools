@@ -40,7 +40,7 @@ Some tools support setting variables via Awk option "-v VARIABLE=VALUE":
                            lists of values (default: lstsep=' ')
  - ignore-sequence_numbers uses the variables "low" and "high" to ignore receive
                            events with sequence numbers outside the closed
-                           interval [low, high] (defaults: low=0, high=infinity)
+                           interval [low,high] (defaults: low=0, high=infinity)
  - ignore-startup_phase    uses the variable "skip" to ignore the first skip+1
                            receive events per flow (default: skip=92)
  - recv-to-csv             uses the variable "sep" to specify the separator
