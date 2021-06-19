@@ -83,14 +83,17 @@ END {
   print "number of flows: " num_flows
   print "total bytes received: " total_bytes
   print "total packets received: " total_received
-  print "total packets sent: " total_sent
+  print "total packets sent(*): " total_sent
   print "start time: " start_time
   print "end time: " end_time
   duration = mgen_ts_to_seconds(end_time) - mgen_ts_to_seconds(start_time)
   print "duration: " duration "s"
+  print "received packet rate: " total_received / duration "pps"
+  print "sent packet rate(*): " total_sent / duration "pps"
   bandwidth = total_bytes * 8 / duration
   print "bandwidth: " bandwidth "b/s"
   loss_percentage = 100 * (total_sent - total_received) / total_sent
   print "packet loss: " loss_percentage "%"
   print "finished at " strftime()
+  print " (*) sent numbers are based on highest received sequence numbers"
 }
