@@ -1,4 +1,14 @@
-Tools to analyze MGEN logfiles:
+Tools to Analyze MGEN Log Files:
+================================
+
+This repository contains tools that can be used to analyze log files created by
+the Multi-Generator (MGEN) network test tool.  The tools are implemented in Awk
+and require a POSIX compatible Awk interpreter.  They are expected to work with
+both GNU awk (gawk) and mawk.
+
+
+List of Tools:
+--------------
 
 average-bandwidth         compute overall average bandwidth and other statistics
                           (aggregated information over all flows)
@@ -19,10 +29,14 @@ packet-reorder-filter     print a message for each reordered packet
 recv-to-csv               create CSV table (with header) of receive events
                           (time stamps are converted into seconds)
 
+
+Controlling Tool Operation with Variables:
+------------------------------------------
+
 Some tools support setting variables via Awk option "-v VARIABLE=VALUE":
  - flow-info-csv           uses the variable "sep" to specify the separator
                            string (default: sep=,) and the variable "lstsep"
-                           to specify the list seperator for the potential
+                           to specify the list separator for the potential
                            lists of values (default: lstsep=' ')
  - ignore-sequence_numbers uses the variables "low" and "high" to ignore receive
                            events with sequence numbers outside the closed
@@ -31,6 +45,10 @@ Some tools support setting variables via Awk option "-v VARIABLE=VALUE":
                            receive events per flow (default: skip=92)
  - recv-to-csv             uses the variable "sep" to specify the separator
                            string (default: sep=,)
+
+
+Delayed or Immediate Output:
+----------------------------
 
 Some tools read all input before any output, others produce output immediately:
  - Immediate output:
@@ -48,5 +66,80 @@ Some tools read all input before any output, others produce output immediately:
    - packet-dup-loss-analyzer
    - packet-loss-analyzer
 
+Interrupting (CTRL+C) a tool that needs to read all input results in no output.
+
+
+Third Party Software:
+---------------------
+
 Tools producing CSV output can be used in combination with third party software,
 e.g., LibreOffice Calc, GNU datamash, or q - Text as Data.
+
+To analyze only a subset of flows from (a collection of) MGEN log files, "grep"
+can be used to extract the intended flows, using the output of grep as input
+to the respective tool.
+
+To select a subset of flows from tools that create hierarchical output, i.e.,
+a line naming the flow without indentation followed by indented flow-specific
+information, "section" can be used.
+
+
+Use Cases:
+----------
+
+High-Level Overview:
+
+  Sometimes, a high-level view of the information in MGEN log files is needed,
+  e.g., when sending many data flows with the expectation that the network
+  under test cannot deliver all the data.
+
+  Tools for a high-level overview:
+   - average-bandwidth
+
+Flow-Level Information:
+
+  Sometimes, a flow-level view of the information in MGEN log files is needed,
+  e.g., when one expects different flows to take different paths through the
+  network under test.  In this case one would expect only a subset of the flows
+  to be affected by, e.g., a localized failure event.
+
+  Tools for flow-level information:
+   - flow-info-csv
+   - flow-latency-analyzer
+   - flow-outages
+   - flow-statistics
+   - packet-loss-analyzer
+
+Packet-Level Information:
+
+  Sometimes, a packet-level view of the information in MGEN log files is needed,
+  e.g., when the network under test is expected to deliver every packet, but
+  is delaying, losing, reordering, or duplicating a small number of packets.
+
+  Tools for packet-level information:
+   - packet-dup-loss-analyzer
+   - packet-loss-filter
+   - packet-reorder-filter
+
+
+Data Conditioning:
+------------------
+
+Sometimes, the network under test is expected to exhibit an initial settling
+phase before reaching nominal behavior.  Or some part of an MGEN log file is
+known to coincide with unusual network conditions and shall be excluded from
+analysis.
+
+  Data conditioning tools:
+   - ignore-sequence_numbers
+   - ignore-startup_phase
+
+
+Format Conversion:
+------------------
+
+Instead of writing specific MGEN log file data importers for third-party
+applications, MGEN log file data can be converted to common formats, e.g., CSV.
+
+  Format conversion tools:
+   - recv-to-csv
