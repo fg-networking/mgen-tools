@@ -73,21 +73,6 @@ Some tools read all input before any output, others produce output immediately:
 Interrupting (CTRL+C) a tool that needs to read all input results in no output.
 
 
-Third Party Software:
----------------------
-
-Tools producing CSV output can be used in combination with third party software,
-e.g., LibreOffice Calc, GNU datamash, or q - Text as Data.
-
-To analyze only a subset of flows from (a collection of) MGEN log files, "grep"
-can be used to extract the intended flows, using the output of grep as input
-to the respective tool.
-
-To select a subset of flows from tools that create hierarchical output, i.e.,
-a line naming the flow without indentation followed by indented flow-specific
-information, "section" can be used.
-
-
 Use Cases:
 ----------
 
@@ -158,3 +143,46 @@ applications, MGEN log file data can be converted to common formats, e.g., CSV.
 
   Format conversion tools:
    - recv-to-csv
+
+
+Third Party Software:
+---------------------
+
+Tools producing CSV output can be used in combination with third party software,
+e.g., LibreOffice Calc, GNU datamash, or q - Text as Data.
+
+To analyze only a subset of flows from (a collection of) MGEN log files, "grep"
+can be used to extract the intended flows, using the output of grep as input
+to the respective tool.
+
+To select a subset of flows from tools that create hierarchical output, i.e.,
+a line naming the flow without indentation followed by indented flow-specific
+information, "section" can be used.
+
+
+Links:
+------
+
+Multi-Generator (MGEN) Network Test Tool URL:
+https://www.nrl.navy.mil/Our-Work/Areas-of-Research/Information-Technology/NCS/MGEN/
+
+Older MGEN URLs that redirect to the above:
+ - http://cs.itd.nrl.navy.mil/work/mgen/index.php
+ - https://www.nrl.navy.mil/itd/ncs/products/mgen
+
+The MGEN source code is available on GitHub:
+https://github.com/USNavalResearchLaboratory/mgen
+
+Links to tools mentioned in this README that are not part of POSIX:
+ - GNU datamash:      https://www.gnu.org/software/datamash/
+ - LibreOffice:       https://www.libreoffice.org/
+ - q - Text as Data:  https://harelba.github.io/q/
+ - section:           https://www.unix-ag.uni-kl.de/~auerswal/section/
+
+Free software implementations of the POSIX tools "awk" and "grep" can obtained
+from the GNU project:
+ - GNU awk (gawk):    https://www.gnu.org/software/gawk/
+ - GNU grep:          https://www.gnu.org/software/grep/
+
+[The above links to third party software are valid as of 2021-07-05.
+ Please note that links may change, as well as the content behind links.]
