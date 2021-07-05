@@ -21,6 +21,9 @@ flow-outages              print per flow per outage times and lost packets
 flow-statistics           compute per-flow statistics
 ignore-sequence_numbers   keep packets with sequence numbers in [low,high]
 ignore-startup_phase      remove the first n receive events from every flow
+last-flow-result          print the last mgen-tools result message for each flow
+                          (this tool works on output of other mgen-tools, not
+                          on MGEN logs)
 packet-dup-loss-analyzer  print lost or duplicated packets, one line per packet
 packet-loss-analyzer      count number of received packets and print statistics
                           for each flow and a summary over all flows
@@ -63,6 +66,7 @@ Some tools read all input before any output, others produce output immediately:
    - flow-latency-analyzer
    - flow-outages
    - flow-statistics
+   - last-flow-result
    - packet-dup-loss-analyzer
    - packet-loss-analyzer
 
@@ -120,6 +124,17 @@ Packet-Level Information:
    - packet-dup-loss-analyzer
    - packet-loss-filter
    - packet-reorder-filter
+
+Analyzing mgen-tools output:
+
+  Sometimes, the output of one of the mgen-tools needs to be analyzed further.
+  E.g., the network under test is experiencing several events one after the
+  other where each event should affect only some flows, and packet level
+  information is collected.  In this case, a simple way to check the time of
+  the last reported problem (result message) per flow can be useful.
+
+  Tools to analyze mgen-tools output:
+   - last-flow-result
 
 
 Data Conditioning:

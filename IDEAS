@@ -1,3 +1,0 @@
-- add a tool to print the last re-ordered or missing packet per stream
-  - packet-reorder-filter | fgrep early | sort -n -k 2
-    (highest sequence number at bottom -> goal is more or less fulfilled)
