@@ -179,8 +179,8 @@ Links to tools mentioned in this README that are not part of POSIX:
  - q - Text as Data:  https://harelba.github.io/q/
  - section:           https://www.unix-ag.uni-kl.de/~auerswal/section/
 
-Free software implementations of the POSIX tools "awk" and "grep" can obtained
-from the GNU project:
+Free software implementations of the POSIX tools "awk" and "grep" can be
+obtained from the GNU project:
  - GNU awk (gawk):    https://www.gnu.org/software/gawk/
  - GNU grep:          https://www.gnu.org/software/grep/
 
