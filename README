@@ -149,7 +149,7 @@ Third Party Software:
 ---------------------
 
 Tools producing CSV output can be used in combination with third party software,
-e.g., LibreOffice Calc, GNU datamash, or q - Text as Data.
+e.g., LibreOffice Calc, GNU datamash, q - Text as Data, or Miller.
 
 To analyze only a subset of flows from (a collection of) MGEN log files, "grep"
 can be used to extract the intended flows, using the output of grep as input
@@ -176,6 +176,7 @@ https://github.com/USNavalResearchLaboratory/mgen
 Links to tools mentioned in this README that are not part of POSIX:
  - GNU datamash:      https://www.gnu.org/software/datamash/
  - LibreOffice:       https://www.libreoffice.org/
+ - Miller:            https://github.com/johnkerl/miller/
  - q - Text as Data:  https://harelba.github.io/q/
  - section:           https://www.unix-ag.uni-kl.de/~auerswal/section/
 
