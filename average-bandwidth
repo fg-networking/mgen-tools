@@ -1,7 +1,7 @@
 #! /usr/bin/awk -f
 
 # analyse an mgen log file for average bandwidth and loss
-# Copyright (C) 2008,2017,2021 Erik Auerswald <auerswald@fg-networking.de>
+# Copyright (C) 2008,2017,2021,2026 Erik Auerswald <auerswald@fg-networking.de>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -74,6 +74,10 @@ BEGIN {
 # print average bandwidth and packet loss
 END {
   print "done.\nfinished reading data at " strftime()
+  if (!start_time || !end_time) {
+    print "no receive events in input data (no packets received)"
+    exit 1
+  }
   for (fl in flows) {
     num_flows++
     total_bytes += bytes[fl]
