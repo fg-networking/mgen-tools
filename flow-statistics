@@ -1,7 +1,7 @@
 #! /usr/bin/awk -f
 
 # flow-statistics - compute and print per flow statistics
-# Copyright (C) 2021 Erik Auerswald <auerswald@fg-networking.de>
+# Copyright (C) 2021,2026 Erik Auerswald <auerswald@fg-networking.de>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -29,13 +29,13 @@
 # - number of sent, received, and lost packets
 # - percentage of packets lost
 # - minimum and maximum packet payload sizes
-# - amount of bytes received
+# - amount of payload bytes received
 # - earliest and latest sent timestamps
 # - earliest and latest receive timestamps
 # - flow duration (based on first and last received packets)
 # - average sent packet rate (based on first and last received packets)
 # - average received packet rate
-# - average received bandwidth
+# - average received payload bandwidth
 # - minimum and maximum latencies
 # - minimum and maximum packet inter-arrival times
 
@@ -110,7 +110,7 @@ END {
               packets_lost " (" packets_lost * 100 / packets_sent \
               "%) packets lost"
     print " payload size interval [" min_size[i] "B," max_size[i] "B]"
-    print " " bytes_recv[i] "B received"
+    print " " bytes_recv[i] "B of payload received"
     print " first packet sent at     " first_sent_time[i] "s"
     print " first packet received at " first_recv_time[i] "s"
     print " last packet sent at      " last_sent_time[i] "s"
@@ -119,7 +119,7 @@ END {
     print " flow duration " duration "s"
     print " average sent packet rate " packets_sent / duration "pps"
     print " average received packet rate " num_recv[i] / duration "pps"
-    print " average received bandwidth " bytes_recv[i] * 8 / duration "b/s"
+    print " average received payload bandwidth " bytes_recv[i]*8/duration "b/s"
     print " latency interval [" min_lat[i] "s," max_lat[i] "s]"
     print " packet inter-arrival time interval [" \
             min_delta[i] "s," max_delta[i] "s]"
